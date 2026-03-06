@@ -1,7 +1,7 @@
 # Spec 0001 — MVP Static Validator Dashboard
 
 ## Status
-Draft (ready for implementation after final clarifications)
+Approved for implementation
 
 ## Goal
 Build a static, front-end-only React dashboard for Ethereum validators that can be hosted on S3 and configured entirely via URL query parameters and UI controls.
@@ -24,6 +24,7 @@ Build a static, front-end-only React dashboard for Ethereum validators that can 
 - No backend required.
 - App must run as static assets.
 - Users can provide their own EL/CL endpoints.
+- Network scope for MVP: Ethereum mainnet only.
 
 ### 2) Validator Input
 - Support multiple validators by validator index.
@@ -48,6 +49,8 @@ Build a static, front-end-only React dashboard for Ethereum validators that can 
 - One row per validator.
 - Totals/aggregate row at bottom.
 - Theme: black background, gold accents, white/light-gray text/components.
+- Add pagination UI with display-size options: 20 / 50 / 100 rows per page.
+- Totals must aggregate across all loaded validators (not only visible page rows).
 
 ### 5) Per-Validator Metrics (MVP)
 - Validator index
@@ -59,26 +62,31 @@ Build a static, front-end-only React dashboard for Ethereum validators that can 
 - Outflows/distributions from reward-related addresses (ETH)
 - Yield (based on selected mode)
 - Rocket Pool/minipool reward-related fields where applicable
-- Lido/operator-related fields where applicable
 - Relevant status field(s)
 
 ### 6) Yield Modes
 - Toggle: daily / monthly / annual / lifetime
 - Controlled by state and optional query param `yieldMode`.
 
-### 7) Lifetime Yield Rules
+### 7) Yield Window Definition
+- Daily/monthly/annual use **rolling windows** from current time:
+  - Daily: trailing 24h
+  - Monthly: trailing 30d
+  - Annual: trailing 365d
+- Lifetime uses all known cumulative history in currently queried data.
+
+### 8) Lifetime Yield Rules
 - Lifetime yield = cumulative rewards generated relative to principal.
 - Outflows/distributions DO NOT reduce lifetime yield.
 - Distributions are cash-outs, not negative performance.
 - UI note/tooltip must explicitly explain this.
 
-### 8) Rocket Pool + Lido Support
-- Rocket Pool and Lido enrichment should prefer public on-chain data.
+### 9) Rocket Pool Support
+- Rocket Pool enrichment should prefer public on-chain data.
 - RPL rewards shown as RPL (no ETH conversion for MVP).
 - Show note: RPL excluded from ETH yield calculations.
-- Lido support added to this scope for validator performance context.
 
-### 9) State Management
+### 10) State Management
 Use React Context (no Redux) for shared state:
 - Parsed validator set
 - RPC endpoint config
@@ -86,8 +94,9 @@ Use React Context (no Redux) for shared state:
 - Aggregated totals
 - Selected yield mode
 - Loading + error states
+- Pagination state (page index + page size)
 
-### 10) UX
+### 11) UX
 - Loading state
 - Empty state
 - Error state
@@ -95,7 +104,7 @@ Use React Context (no Redux) for shared state:
 - URL-driven bookmarkable state
 - Practical, professional minimal UI
 
-### 11) Architecture / Utilities
+### 12) Architecture / Utilities
 Create utility modules for:
 - Validator range parsing/expansion
 - Query param read/write
@@ -108,7 +117,7 @@ Code quality:
 - Production-quality structure
 - Helpful comments around range parsing + yield logic
 
-### 12) Deliverables
+### 13) Deliverables
 - Full app code for local run and static build
 - README including:
   - Setup
@@ -118,7 +127,7 @@ Code quality:
   - Example URLs
   - Limitations/assumptions
 
-## Proposed MVP Data Strategy (Implementation Plan)
+## MVP Data Strategy (Implementation)
 
 ### Consensus Layer
 - Use Beacon REST standard endpoints to fetch validator metadata/state by index.
@@ -132,26 +141,17 @@ Code quality:
 
 ### Protocol Enrichment
 - Rocket Pool: public contract data + logs (on-chain only)
-- Lido: public contract data + logs (on-chain only)
+- Lido: deferred (out of MVP scope)
 
 ## Assumptions
 1. Users may need to provide/confirm fee recipient or operator addresses when not inferable from base validator data.
 2. EL RPC must support required historical log queries for selected windows.
 3. Some metrics may be marked “N/A” when underlying data cannot be reliably attributed from available endpoints.
 
-## Open Questions (to confirm before implementation finalization)
-1. Time windows:
-   - Should daily/monthly/annual use rolling windows from “now”, or UTC calendar buckets?
-2. Performance bounds:
-   - Expected max validator count in one view (e.g., 50 / 200 / 1000)?
-3. Lido scope:
-   - Is MVP requirement limited to identifying Lido-associated validators + basic reward context, or deeper Lido module accounting?
-4. Chain support:
-   - Mainnet only for MVP?
-
 ## Non-Goals (MVP)
 - Backend services
 - Authentication
 - Cross-user persistence
 - RPL->ETH conversion
+- Lido support (deferred)
 - Perfect attribution for every possible operator topology without extra user-provided mappings
