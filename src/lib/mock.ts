@@ -42,6 +42,12 @@ export function loadMockValidators(
           : withdrawalAddress,
       status:
         seeded(index, 7) > 0.08 ? 'active_ongoing' : 'pending_initialized',
+      attributionSource:
+        protocolTag === 'rocketpool'
+          ? 'Mock proof path: minipool contract -> node operator withdrawal destination'
+          : protocolTag === 'lido'
+            ? 'Mock proof path: canonical Lido withdrawal vault'
+            : 'Mock proof path: direct 0x01 withdrawal credentials to operator address',
       effectiveBalanceEth: 32,
       principalEth,
       currentBalanceEth,

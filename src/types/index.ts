@@ -12,6 +12,7 @@ export interface ValidatorRow {
   pubkey?: string;
   withdrawalAddress?: string;
   validatorRewardsAddress?: string;
+  attributionSource?: string;
   status?: string;
   effectiveBalanceEth: number;
   principalEth: number;

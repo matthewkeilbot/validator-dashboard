@@ -59,6 +59,10 @@ export function ValidatorDetails({
         value={row.validatorRewardsAddress ?? row.withdrawalAddress ?? '—'}
       />
       <InfoLine
+        label="Attribution proof path"
+        value={row.attributionSource ?? '—'}
+      />
+      <InfoLine
         label="Current balance"
         value={formatEth(row.currentBalanceEth)}
       />
