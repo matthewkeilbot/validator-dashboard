@@ -15,6 +15,8 @@ function DashboardPage() {
     setPageSize,
     page,
     setPage,
+    mock,
+    setMock,
     rows,
     pagedRows,
     totals,
@@ -50,6 +52,8 @@ function DashboardPage() {
             setPageSize(value);
             setPage(1);
           }}
+          mock={mock}
+          setMock={setMock}
           onRefresh={() => void refresh()}
           loading={loading}
         />

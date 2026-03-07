@@ -14,6 +14,8 @@ interface ControlsPanelProps {
   setYieldMode: (value: YieldMode) => void;
   pageSize: number;
   setPageSize: (value: number) => void;
+  mock: boolean;
+  setMock: (value: boolean) => void;
   onRefresh: () => void;
   loading: boolean;
 }
@@ -107,6 +109,17 @@ export function ControlsPanel(props: ControlsPanelProps) {
         <Button onClick={props.onRefresh} disabled={props.loading}>
           {props.loading ? 'Loading…' : 'Refresh'}
         </Button>
+
+        <label className="inline-flex items-center gap-2 text-xs text-zinc-300">
+          <input
+            type="checkbox"
+            checked={props.mock}
+            onChange={(event) => props.setMock(event.target.checked)}
+            className="h-4 w-4 accent-amber-500"
+          />
+          Mock data mode
+        </label>
+
         <p className="text-xs text-zinc-400">
           Lifetime yield is based on cumulative rewards generated and does not
           subtract distributions/cash-outs.

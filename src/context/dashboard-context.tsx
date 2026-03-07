@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { loadValidators } from '@/lib/ethereum';
+import { loadMockValidators } from '@/lib/mock';
 import { readQueryState, writeQueryState } from '@/lib/queryParams';
 import { parseValidatorInput } from '@/lib/validators';
 import { aggregateTotals } from '@/lib/yield';
@@ -29,6 +30,8 @@ interface DashboardContextValue {
   setPageSize: (value: number) => void;
   page: number;
   setPage: (value: number) => void;
+  mock: boolean;
+  setMock: (value: boolean) => void;
   rows: ValidatorRow[];
   pagedRows: ValidatorRow[];
   totals: ValidatorTotals;
@@ -56,6 +59,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [yieldMode, setYieldMode] = useState<YieldMode>(initial.yieldMode);
   const [pageSize, setPageSize] = useState(initial.pageSize);
   const [page, setPage] = useState(initial.page);
+  const [mock, setMock] = useState(initial.mock);
   const [rows, setRows] = useState<ValidatorRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,8 +70,15 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   }, [validatorInput]);
 
   useEffect(() => {
-    writeQueryState({ validatorIndices, rpcConfig, yieldMode, pageSize, page });
-  }, [validatorIndices, rpcConfig, yieldMode, pageSize, page]);
+    writeQueryState({
+      validatorIndices,
+      rpcConfig,
+      yieldMode,
+      pageSize,
+      page,
+      mock,
+    });
+  }, [validatorIndices, rpcConfig, yieldMode, pageSize, page, mock]);
 
   const refresh = useCallback(async () => {
     if (!validatorIndices.length) {
@@ -80,6 +91,11 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     setError(null);
 
     try {
+      if (mock) {
+        setRows(loadMockValidators(validatorIndices, yieldMode));
+        return;
+      }
+
       const data = await loadValidators(validatorIndices, rpcConfig, yieldMode);
       setRows(data);
     } catch (unknownError) {
@@ -89,7 +105,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [validatorIndices, rpcConfig, yieldMode]);
+  }, [validatorIndices, rpcConfig, yieldMode, mock]);
 
   useEffect(() => {
     void refresh();
@@ -114,6 +130,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     setPageSize,
     page,
     setPage,
+    mock,
+    setMock,
     rows,
     pagedRows,
     totals,

@@ -10,6 +10,7 @@ export interface QueryState {
   yieldMode: YieldMode;
   pageSize: number;
   page: number;
+  mock: boolean;
 }
 
 export function readQueryState(defaults: RpcConfig): QueryState {
@@ -33,6 +34,7 @@ export function readQueryState(defaults: RpcConfig): QueryState {
     yieldMode,
     pageSize: [20, 50, 100].includes(pageSizeRaw) ? pageSizeRaw : 20,
     page: Number.isInteger(pageRaw) && pageRaw > 0 ? pageRaw : 1,
+    mock: params.get('mock') === '1' || params.get('mock') === 'true',
   };
 }
 
@@ -42,6 +44,7 @@ export function writeQueryState(state: {
   yieldMode: YieldMode;
   pageSize: number;
   page: number;
+  mock: boolean;
 }) {
   const params = new URLSearchParams(window.location.search);
 
@@ -58,6 +61,9 @@ export function writeQueryState(state: {
   params.set('yieldMode', state.yieldMode);
   params.set('pageSize', String(state.pageSize));
   params.set('page', String(state.page));
+
+  if (state.mock) params.set('mock', '1');
+  else params.delete('mock');
 
   const search = params.toString();
   const newUrl = `${window.location.pathname}${search ? `?${search}` : ''}`;
