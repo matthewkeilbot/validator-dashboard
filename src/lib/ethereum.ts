@@ -15,6 +15,10 @@ interface BeaconValidatorResponse {
 }
 
 const RPL_TOKEN_MAINNET = '0xD33526068D116cE69F19A9ee46F0bd304F21A51f';
+const LIDO_WITHDRAWAL_VAULT = ethers.getAddress(
+  '0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1',
+);
+const ROCKET_POOL_REWARDS_ADDRESS = 'Rocket Pool protocol distribution';
 const ERC20_TRANSFER_TOPIC = ethers.id('Transfer(address,address,uint256)');
 
 function withdrawalCredentialsToAddress(
@@ -122,10 +126,24 @@ export async function loadValidators(
         mode,
       );
 
+      const protocolTag = !withdrawalAddress
+        ? 'unknown'
+        : withdrawalAddress === LIDO_WITHDRAWAL_VAULT
+          ? 'lido'
+          : rocketPoolRplRewards > 0
+            ? 'rocketpool'
+            : 'native';
+
+      const validatorRewardsAddress =
+        protocolTag === 'rocketpool'
+          ? ROCKET_POOL_REWARDS_ADDRESS
+          : withdrawalAddress;
+
       return {
         index,
         pubkey: validator?.pubkey,
         withdrawalAddress,
+        validatorRewardsAddress,
         status: beacon.data?.status,
         effectiveBalanceEth,
         principalEth,
@@ -134,9 +152,9 @@ export async function loadValidators(
         inflowsEth,
         outflowsEth: 0,
         rocketPoolRplRewards,
-        protocolTag: rocketPoolRplRewards > 0 ? 'rocketpool' : 'unknown',
+        protocolTag,
         notes:
-          'MVP uses beacon + EL snapshots. Lifetime yield tracks generated rewards and does not subtract distributions.',
+          'Withdrawal address is operator destination. For Rocket Pool validators, consensus rewards route through Rocket Pool first, then operator share flows to withdrawal address.',
       } satisfies ValidatorRow;
     }),
   );

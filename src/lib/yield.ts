@@ -22,6 +22,7 @@ export function aggregateTotals(rows: ValidatorRow[]): ValidatorTotals {
       acc.count += 1;
       acc.principalEth += row.principalEth;
       acc.currentBalanceEth += row.currentBalanceEth;
+      acc.effectiveBalanceEth += row.effectiveBalanceEth;
       acc.rewardsEarnedEth += row.rewardsEarnedEth;
       acc.inflowsEth += row.inflowsEth;
       acc.outflowsEth += row.outflowsEth;
@@ -31,6 +32,7 @@ export function aggregateTotals(rows: ValidatorRow[]): ValidatorTotals {
     {
       count: 0,
       principalEth: 0,
+      effectiveBalanceEth: 0,
       currentBalanceEth: 0,
       rewardsEarnedEth: 0,
       inflowsEth: 0,

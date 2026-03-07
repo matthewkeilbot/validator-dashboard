@@ -1,9 +1,14 @@
+import { useEffect, useState } from 'react';
 import { ControlsPanel } from '@/components/ControlsPanel';
 import { PaginationControls } from '@/components/PaginationControls';
+import { ValidatorDetails } from '@/components/ValidatorDetails';
 import { ValidatorTable } from '@/components/ValidatorTable';
 import { DashboardProvider, useDashboard } from '@/context/dashboard-context';
+import type { ValidatorRow } from '@/types';
 
 function DashboardPage() {
+  const [selectedRow, setSelectedRow] = useState<ValidatorRow | null>(null);
+
   const {
     validatorInput,
     setValidatorInput,
@@ -24,6 +29,12 @@ function DashboardPage() {
     error,
     refresh,
   } = useDashboard();
+
+  useEffect(() => {
+    if (!selectedRow) return;
+    const match = rows.find((row) => row.index === selectedRow.index) ?? null;
+    setSelectedRow(match);
+  }, [rows, selectedRow]);
 
   return (
     <main className="min-h-screen bg-black text-zinc-100">
@@ -81,8 +92,15 @@ function DashboardPage() {
             <ValidatorTable
               rows={pagedRows}
               totals={totals}
-              yieldMode={yieldMode}
+              onSelectRow={setSelectedRow}
             />
+            {selectedRow ? (
+              <ValidatorDetails
+                row={selectedRow}
+                yieldMode={yieldMode}
+                onClose={() => setSelectedRow(null)}
+              />
+            ) : null}
           </>
         ) : null}
       </div>

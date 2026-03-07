@@ -1,40 +1,39 @@
-import {
-  formatEth,
-  formatPercent,
-  formatRpl,
-  truncateMiddle,
-} from '@/lib/format';
-import { calculateYieldPercent } from '@/lib/yield';
-import type { ValidatorRow, ValidatorTotals, YieldMode } from '@/types';
+import { formatEth, truncateMiddle } from '@/lib/format';
+import type { ValidatorRow, ValidatorTotals } from '@/types';
 
 interface ValidatorTableProps {
   rows: ValidatorRow[];
   totals: ValidatorTotals;
-  yieldMode: YieldMode;
+  onSelectRow: (row: ValidatorRow) => void;
+}
+
+function formatType(type?: ValidatorRow['protocolTag']) {
+  if (!type) return 'Unknown';
+  if (type === 'native') return 'Native';
+  if (type === 'rocketpool') return 'Rocket Pool';
+  if (type === 'lido') return 'Lido';
+  return 'Unknown';
 }
 
 export function ValidatorTable({
   rows,
   totals,
-  yieldMode,
+  onSelectRow,
 }: ValidatorTableProps) {
   return (
     <div className="overflow-auto rounded-lg border border-zinc-800">
-      <table className="w-full min-w-[1200px] border-collapse text-left text-sm">
+      <table className="w-full min-w-[1100px] border-collapse text-left text-sm">
         <thead className="bg-zinc-900 text-zinc-300">
           <tr>
             {[
               'Index',
-              'Pubkey',
-              'Withdrawal',
+              'Withdrawals address',
+              'Type',
               'Status',
-              'Effective',
-              'Current',
-              'Rewards',
-              'Inflows',
+              'Current balance',
+              'Effective balance',
+              'Validator rewards',
               'Outflows',
-              `Yield (${yieldMode})`,
-              'Rocket Pool RPL',
             ].map((header) => (
               <th
                 key={header}
@@ -47,39 +46,34 @@ export function ValidatorTable({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.index} className="even:bg-zinc-950/60">
-              <td className="border-b border-zinc-900 px-3 py-2">
+            <tr
+              key={row.index}
+              className="cursor-pointer even:bg-zinc-950/60 hover:bg-zinc-800/50"
+              onClick={() => onSelectRow(row)}
+            >
+              <td className="border-b border-zinc-900 px-3 py-2 text-amber-300">
                 {row.index}
-              </td>
-              <td className="border-b border-zinc-900 px-3 py-2">
-                {truncateMiddle(row.pubkey, 10)}
               </td>
               <td className="border-b border-zinc-900 px-3 py-2">
                 {truncateMiddle(row.withdrawalAddress, 8)}
               </td>
               <td className="border-b border-zinc-900 px-3 py-2">
+                {formatType(row.protocolTag)}
+              </td>
+              <td className="border-b border-zinc-900 px-3 py-2">
                 {row.status ?? '—'}
               </td>
               <td className="border-b border-zinc-900 px-3 py-2">
-                {formatEth(row.effectiveBalanceEth)}
+                {formatEth(row.currentBalanceEth)}
               </td>
               <td className="border-b border-zinc-900 px-3 py-2">
-                {formatEth(row.currentBalanceEth)}
+                {formatEth(row.effectiveBalanceEth)}
               </td>
               <td className="border-b border-zinc-900 px-3 py-2 text-amber-400">
                 {formatEth(row.rewardsEarnedEth)}
               </td>
               <td className="border-b border-zinc-900 px-3 py-2">
-                {formatEth(row.inflowsEth)}
-              </td>
-              <td className="border-b border-zinc-900 px-3 py-2">
                 {formatEth(row.outflowsEth)}
-              </td>
-              <td className="border-b border-zinc-900 px-3 py-2">
-                {formatPercent(calculateYieldPercent(row, yieldMode))}
-              </td>
-              <td className="border-b border-zinc-900 px-3 py-2">
-                {formatRpl(row.rocketPoolRplRewards)}
               </td>
             </tr>
           ))}
@@ -90,22 +84,14 @@ export function ValidatorTable({
             <td className="px-3 py-2">—</td>
             <td className="px-3 py-2">—</td>
             <td className="px-3 py-2">—</td>
-            <td className="px-3 py-2">{formatEth(totals.principalEth)}</td>
             <td className="px-3 py-2">{formatEth(totals.currentBalanceEth)}</td>
+            <td className="px-3 py-2">
+              {formatEth(totals.effectiveBalanceEth)}
+            </td>
             <td className="px-3 py-2 text-amber-400">
               {formatEth(totals.rewardsEarnedEth)}
             </td>
-            <td className="px-3 py-2">{formatEth(totals.inflowsEth)}</td>
             <td className="px-3 py-2">{formatEth(totals.outflowsEth)}</td>
-            <td className="px-3 py-2">
-              {formatPercent(
-                (totals.rewardsEarnedEth / Math.max(totals.principalEth, 1)) *
-                  100,
-              )}
-            </td>
-            <td className="px-3 py-2">
-              {formatRpl(totals.rocketPoolRplRewards)}
-            </td>
           </tr>
         </tfoot>
       </table>

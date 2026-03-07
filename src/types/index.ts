@@ -5,10 +5,13 @@ export interface RpcConfig {
   clRpc: string;
 }
 
+export type ValidatorType = 'native' | 'rocketpool' | 'lido' | 'unknown';
+
 export interface ValidatorRow {
   index: number;
   pubkey?: string;
   withdrawalAddress?: string;
+  validatorRewardsAddress?: string;
   status?: string;
   effectiveBalanceEth: number;
   principalEth: number;
@@ -17,13 +20,14 @@ export interface ValidatorRow {
   inflowsEth: number;
   outflowsEth: number;
   rocketPoolRplRewards?: number;
-  protocolTag?: 'rocketpool' | 'unknown';
+  protocolTag?: ValidatorType;
   notes?: string;
 }
 
 export interface ValidatorTotals {
   count: number;
   principalEth: number;
+  effectiveBalanceEth: number;
   currentBalanceEth: number;
   rewardsEarnedEth: number;
   inflowsEth: number;
