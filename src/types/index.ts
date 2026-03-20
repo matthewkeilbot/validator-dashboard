@@ -35,3 +35,25 @@ export interface ValidatorTotals {
   outflowsEth: number;
   rocketPoolRplRewards: number;
 }
+
+export interface ValidatorLoadState {
+  status: 'idle' | 'loading' | 'loaded' | 'error';
+  error?: string;
+}
+
+export interface BeaconValidatorData {
+  index: number;
+  status?: string;
+  pubkey?: string;
+  withdrawalCredentials?: string;
+  effectiveBalance?: string;
+  balance?: string;
+}
+
+export interface AttributionResult {
+  protocolTag: ValidatorType;
+  withdrawalAddress?: string;
+  validatorRewardsAddress?: string;
+  attributionSource: string;
+  notes: string;
+}

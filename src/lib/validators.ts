@@ -1,3 +1,28 @@
+export const MAX_VALIDATORS = 200;
+
+export interface ParseResult {
+  indices: number[];
+  capped: boolean;
+  requestedCount: number;
+}
+
+/**
+ * Parse validator input with safety cap.
+ * Returns metadata about whether the input was truncated.
+ */
+export function parseValidatorInputSafe(input: string): ParseResult {
+  const all = parseValidatorInput(input);
+  return {
+    indices: all.slice(0, MAX_VALIDATORS),
+    capped: all.length > MAX_VALIDATORS,
+    requestedCount: all.length,
+  };
+}
+
+/**
+ * Parse validator index input string (e.g. "1-7,12,20-22") into a sorted
+ * unique array of indices. Capped at MAX_VALIDATORS to prevent browser crashes.
+ */
 export function parseValidatorInput(input: string): number[] {
   if (!input.trim()) return [];
 
@@ -22,15 +47,20 @@ export function parseValidatorInput(input: string): number[] {
 
       const lower = Math.min(start, end);
       const upper = Math.max(start, end);
-      for (let i = lower; i <= upper; i += 1) {
+      // Safety: cap expansion to prevent massive arrays
+      const cappedUpper = Math.min(upper, lower + MAX_VALIDATORS);
+      for (let i = lower; i <= cappedUpper; i += 1) {
         result.add(i);
+        if (result.size >= MAX_VALIDATORS) break;
       }
+      if (result.size >= MAX_VALIDATORS) break;
       continue;
     }
 
     const parsed = Number.parseInt(token, 10);
     if (Number.isInteger(parsed) && parsed >= 0) {
       result.add(parsed);
+      if (result.size >= MAX_VALIDATORS) break;
     }
   }
 

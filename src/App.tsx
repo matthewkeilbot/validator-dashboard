@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ControlsPanel } from '@/components/ControlsPanel';
 import { PaginationControls } from '@/components/PaginationControls';
 import { ValidatorDetails } from '@/components/ValidatorDetails';
@@ -12,6 +12,8 @@ function DashboardPage() {
   const {
     validatorInput,
     setValidatorInput,
+    inputCapped,
+    inputRequestedCount,
     rpcConfig,
     setRpcConfig,
     yieldMode,
@@ -25,16 +27,16 @@ function DashboardPage() {
     rows,
     pagedRows,
     totals,
-    loading,
+    validatorLoadStates,
+    globalLoading,
     error,
     refresh,
   } = useDashboard();
 
-  useEffect(() => {
-    if (!selectedRow) return;
-    const match = rows.find((row) => row.index === selectedRow.index) ?? null;
-    setSelectedRow(match);
-  }, [rows, selectedRow]);
+  // Keep selected row in sync with updated data
+  const currentSelected = selectedRow
+    ? rows.find((r) => r.index === selectedRow.index) ?? null
+    : null;
 
   return (
     <main className="min-h-screen bg-black text-zinc-100">
@@ -65,20 +67,32 @@ function DashboardPage() {
           }}
           mock={mock}
           setMock={setMock}
-          onRefresh={() => void refresh()}
-          loading={loading}
+          onRefresh={refresh}
+          loading={globalLoading}
         />
 
-        {error ? (
-          <div className="rounded-lg border border-red-900 bg-red-950/40 p-4 text-sm text-red-200">
-            Error loading validator data: {error}
+        {inputCapped ? (
+          <div className="rounded-lg border border-amber-800 bg-amber-950/40 p-3 text-sm text-amber-200">
+            ⚠️ Input contained {inputRequestedCount} validators — capped to 200
+            to prevent browser overload.
           </div>
         ) : null}
 
-        {!loading && rows.length === 0 ? (
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 text-sm text-zinc-400">
-            Enter validator indices (e.g. 1-7,12,20-22) to load data.
+        {error ? (
+          <div className="rounded-lg border border-red-900 bg-red-950/40 p-4 text-sm text-red-200">
+            {error}
           </div>
+        ) : null}
+
+        {!globalLoading && rows.length === 0 ? (
+          <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 text-sm text-zinc-400">
+            Enter validator indices (e.g. 1-7,12,20-22) and press Refresh to
+            load data.
+          </div>
+        ) : null}
+
+        {globalLoading && rows.length === 0 ? (
+          <ValidatorTable rows={[]} totals={totals} onSelectRow={() => {}} loading />
         ) : null}
 
         {rows.length > 0 ? (
@@ -93,10 +107,12 @@ function DashboardPage() {
               rows={pagedRows}
               totals={totals}
               onSelectRow={setSelectedRow}
+              loading={globalLoading}
+              loadStates={validatorLoadStates}
             />
-            {selectedRow ? (
+            {currentSelected ? (
               <ValidatorDetails
-                row={selectedRow}
+                row={currentSelected}
                 yieldMode={yieldMode}
                 onClose={() => setSelectedRow(null)}
               />
