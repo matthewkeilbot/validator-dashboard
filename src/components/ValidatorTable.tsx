@@ -1,5 +1,9 @@
 import { formatEth, truncateMiddle } from '@/lib/format';
-import type { ValidatorLoadState, ValidatorRow, ValidatorTotals } from '@/types';
+import type {
+  ValidatorLoadState,
+  ValidatorRow,
+  ValidatorTotals,
+} from '@/types';
 
 interface ValidatorTableProps {
   rows: ValidatorRow[];
@@ -31,8 +35,8 @@ function formatType(type?: ValidatorRow['protocolTag']) {
 function SkeletonRow() {
   return (
     <tr className="animate-pulse">
-      {HEADERS.map((_, i) => (
-        <td key={i} className="border-b border-zinc-900 px-3 py-2">
+      {HEADERS.map((header) => (
+        <td key={header} className="border-b border-zinc-900 px-3 py-2">
           <div className="h-4 w-20 rounded bg-zinc-800" />
         </td>
       ))}
@@ -77,7 +81,10 @@ export function ValidatorTable({
         </thead>
         <tbody>
           {loading && rows.length === 0
-            ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+            ? Array.from({ length: 5 }).map((_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders never reorder
+                <SkeletonRow key={i} />
+              ))
             : rows.map((row) => (
                 <tr
                   key={row.index}

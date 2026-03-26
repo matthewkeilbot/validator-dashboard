@@ -81,9 +81,21 @@ describe('aggregateTotals', () => {
 
   it('aggregates multiple rows correctly', () => {
     const rows = [
-      makeRow({ principalEth: 32, rewardsEarnedEth: 1, rocketPoolRplRewards: 3 }),
-      makeRow({ principalEth: 32, rewardsEarnedEth: 2, rocketPoolRplRewards: undefined }),
-      makeRow({ principalEth: 32, rewardsEarnedEth: 0.5, rocketPoolRplRewards: 1 }),
+      makeRow({
+        principalEth: 32,
+        rewardsEarnedEth: 1,
+        rocketPoolRplRewards: 3,
+      }),
+      makeRow({
+        principalEth: 32,
+        rewardsEarnedEth: 2,
+        rocketPoolRplRewards: undefined,
+      }),
+      makeRow({
+        principalEth: 32,
+        rewardsEarnedEth: 0.5,
+        rocketPoolRplRewards: 1,
+      }),
     ];
     const totals = aggregateTotals(rows);
     expect(totals.count).toBe(3);

@@ -8,7 +8,7 @@ describe('validator-service e2e', () => {
     const data = await fetchValidatorData(CL_RPC, 0);
     expect(data.index).toBe(0);
     expect(data.pubkey).toBeDefined();
-    expect(data.pubkey!.startsWith('0x')).toBe(true);
+    expect(data.pubkey?.startsWith('0x')).toBe(true);
     expect(data.status).toBeDefined();
     expect(data.effectiveBalance).toBeDefined();
     expect(data.balance).toBeDefined();
@@ -25,8 +25,6 @@ describe('validator-service e2e', () => {
 
   it('fails gracefully for a non-existent validator', async () => {
     // Validator index way beyond current count
-    await expect(
-      fetchValidatorData(CL_RPC, 99999999),
-    ).rejects.toThrow();
+    await expect(fetchValidatorData(CL_RPC, 99999999)).rejects.toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import { describe, expect, it, afterAll } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { estimateRplRewards, getAddressBalance } from '../../rewards-service';
 import { clearProviderCache } from '../../rpc-service';
 

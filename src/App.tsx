@@ -35,7 +35,7 @@ function DashboardPage() {
 
   // Keep selected row in sync with updated data
   const currentSelected = selectedRow
-    ? rows.find((r) => r.index === selectedRow.index) ?? null
+    ? (rows.find((r) => r.index === selectedRow.index) ?? null)
     : null;
 
   return (
@@ -92,7 +92,12 @@ function DashboardPage() {
         ) : null}
 
         {globalLoading && rows.length === 0 ? (
-          <ValidatorTable rows={[]} totals={totals} onSelectRow={() => {}} loading />
+          <ValidatorTable
+            rows={[]}
+            totals={totals}
+            onSelectRow={() => {}}
+            loading
+          />
         ) : null}
 
         {rows.length > 0 ? (

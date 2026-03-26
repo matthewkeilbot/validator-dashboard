@@ -109,6 +109,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   }, [parsed.indices, rpcConfig, yieldMode, pageSize, page, mock]);
 
   // Reset page when input changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional — reset page on input change
   useEffect(() => {
     setPage(1);
   }, [validatorInput]);
@@ -121,42 +122,36 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     setRows([]);
     setValidatorLoadStates({});
 
-    void loadAllValidators(
-      parsed.indices,
-      rpcConfig,
-      yieldMode,
-      mock,
-      {
-        onValidatorLoaded: (row) => {
-          if (loadIdRef.current !== currentLoadId) return; // stale
-          setRows((prev) => {
-            const existing = prev.findIndex((r) => r.index === row.index);
-            if (existing >= 0) {
-              const next = [...prev];
-              next[existing] = row;
-              return next;
-            }
-            return [...prev, row].sort((a, b) => a.index - b.index);
-          });
-        },
-        onValidatorError: (_index, _error) => {
-          if (loadIdRef.current !== currentLoadId) return;
-          // Individual errors are tracked via load states
-        },
-        onLoadStateChange: (index, state) => {
-          if (loadIdRef.current !== currentLoadId) return;
-          setValidatorLoadStates((prev) => ({ ...prev, [index]: state }));
-        },
-        onGlobalLoadingChange: (loading) => {
-          if (loadIdRef.current !== currentLoadId) return;
-          setGlobalLoading(loading);
-        },
-        onGlobalError: (err) => {
-          if (loadIdRef.current !== currentLoadId) return;
-          setError(err);
-        },
+    void loadAllValidators(parsed.indices, rpcConfig, yieldMode, mock, {
+      onValidatorLoaded: (row) => {
+        if (loadIdRef.current !== currentLoadId) return; // stale
+        setRows((prev) => {
+          const existing = prev.findIndex((r) => r.index === row.index);
+          if (existing >= 0) {
+            const next = [...prev];
+            next[existing] = row;
+            return next;
+          }
+          return [...prev, row].sort((a, b) => a.index - b.index);
+        });
       },
-    );
+      onValidatorError: (_index, _error) => {
+        if (loadIdRef.current !== currentLoadId) return;
+        // Individual errors are tracked via load states
+      },
+      onLoadStateChange: (index, state) => {
+        if (loadIdRef.current !== currentLoadId) return;
+        setValidatorLoadStates((prev) => ({ ...prev, [index]: state }));
+      },
+      onGlobalLoadingChange: (loading) => {
+        if (loadIdRef.current !== currentLoadId) return;
+        setGlobalLoading(loading);
+      },
+      onGlobalError: (err) => {
+        if (loadIdRef.current !== currentLoadId) return;
+        setError(err);
+      },
+    });
   }, [parsed.indices, rpcConfig, yieldMode, mock]);
 
   // Auto-refresh on first mount only (if there are validators in the URL)

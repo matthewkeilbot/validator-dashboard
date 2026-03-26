@@ -19,7 +19,8 @@ const mockRow: ValidatorRow = {
   inflowsEth: 0.8,
   outflowsEth: 0,
   rocketPoolRplRewards: 0,
-  notes: 'Native validator flow: rewards go directly to the withdrawal address.',
+  notes:
+    'Native validator flow: rewards go directly to the withdrawal address.',
 };
 
 const meta: Meta<typeof ValidatorDetails> = {

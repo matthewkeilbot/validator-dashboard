@@ -1,3 +1,4 @@
+import { loadMockValidators } from '@/lib/mock';
 import type {
   BeaconValidatorData,
   RpcConfig,
@@ -5,7 +6,6 @@ import type {
   ValidatorRow,
   YieldMode,
 } from '@/types';
-import { loadMockValidators } from '@/lib/mock';
 import {
   detectAttribution,
   withdrawalCredentialsToAddress,
@@ -32,8 +32,7 @@ async function buildValidatorRow(
   rpcConfig: RpcConfig,
   yieldMode: YieldMode,
 ): Promise<ValidatorRow> {
-  const effectiveBalanceEth =
-    Number(beaconData.effectiveBalance ?? '0') / 1e9;
+  const effectiveBalanceEth = Number(beaconData.effectiveBalance ?? '0') / 1e9;
   const currentBalanceEth =
     Number(beaconData.balance ?? beaconData.effectiveBalance ?? '0') / 1e9;
   const principalEth = 32;
@@ -43,7 +42,10 @@ async function buildValidatorRow(
     beaconData.withdrawalCredentials,
   );
 
-  const attribution = await detectAttribution(rpcConfig.elRpc, credentialAddress);
+  const attribution = await detectAttribution(
+    rpcConfig.elRpc,
+    credentialAddress,
+  );
 
   let inflowsEth = 0;
   if (attribution.withdrawalAddress) {
@@ -126,8 +128,7 @@ export async function loadAllValidators(
           callbacks.onLoadStateChange(index, { status: 'loaded' });
         } catch (err) {
           errorCount++;
-          const message =
-            err instanceof Error ? err.message : 'Unknown error';
+          const message = err instanceof Error ? err.message : 'Unknown error';
           callbacks.onValidatorError(index, message);
           callbacks.onLoadStateChange(index, {
             status: 'error',

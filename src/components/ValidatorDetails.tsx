@@ -61,7 +61,11 @@ export function ValidatorDetails({
         </button>
       </div>
 
-      <InfoLine label="Type" value={typeLabel(row.protocolTag)} loading={loading} />
+      <InfoLine
+        label="Type"
+        value={typeLabel(row.protocolTag)}
+        loading={loading}
+      />
       <InfoLine label="Status" value={row.status ?? '—'} loading={loading} />
       <InfoLine label="Pubkey" value={row.pubkey ?? '—'} loading={loading} />
       <InfoLine
@@ -94,8 +98,16 @@ export function ValidatorDetails({
         value={formatEth(row.rewardsEarnedEth)}
         loading={loading}
       />
-      <InfoLine label="Inflows" value={formatEth(row.inflowsEth)} loading={loading} />
-      <InfoLine label="Outflows" value={formatEth(row.outflowsEth)} loading={loading} />
+      <InfoLine
+        label="Inflows"
+        value={formatEth(row.inflowsEth)}
+        loading={loading}
+      />
+      <InfoLine
+        label="Outflows"
+        value={formatEth(row.outflowsEth)}
+        loading={loading}
+      />
       <InfoLine
         label={`Yield (${yieldMode})`}
         value={formatPercent(calculateYieldPercent(row, yieldMode))}

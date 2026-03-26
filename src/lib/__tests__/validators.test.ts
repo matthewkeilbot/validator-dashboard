@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  MAX_VALIDATORS,
   compressValidatorRanges,
+  MAX_VALIDATORS,
   parseValidatorInput,
   parseValidatorInputSafe,
 } from '../validators';

@@ -98,7 +98,13 @@ export const Loading: Story = {
 export const PartiallyLoaded: Story = {
   args: {
     rows: [mockRows[0]],
-    totals: { ...emptyTotals, count: 1, principalEth: 32, currentBalanceEth: 33.2, rewardsEarnedEth: 1.2 },
+    totals: {
+      ...emptyTotals,
+      count: 1,
+      principalEth: 32,
+      currentBalanceEth: 33.2,
+      rewardsEarnedEth: 1.2,
+    },
     onSelectRow: () => {},
     loading: true,
     loadStates: {
@@ -112,7 +118,13 @@ export const PartiallyLoaded: Story = {
 export const WithErrors: Story = {
   args: {
     rows: [mockRows[0]],
-    totals: { ...emptyTotals, count: 1, principalEth: 32, currentBalanceEth: 33.2, rewardsEarnedEth: 1.2 },
+    totals: {
+      ...emptyTotals,
+      count: 1,
+      principalEth: 32,
+      currentBalanceEth: 33.2,
+      rewardsEarnedEth: 1.2,
+    },
     onSelectRow: () => {},
     loading: false,
     loadStates: {
